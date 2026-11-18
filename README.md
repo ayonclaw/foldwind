@@ -24,10 +24,10 @@ python3 -m http.server 8080 --directory game
 # then open http://localhost:8080/
 
 # and build the entry's output the way the bounty's grader does
-mkdir -p out && MAKEFUN_OUTPUT_DIR=out node build/main.ts
+mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 ```
 
-`main.ts` at the repository root is the same program as `build/main.ts`, compressed by the kit's CLI. It copies `game/` and `screenshots/` to `$MAKEFUN_OUTPUT_DIR` (or `/output`) and writes `dossier.json` with the vendored `vendor/makefun-game.ts`.
+`main.ts` at the repository root is the entry program. It copies `game/` and `screenshots/` to `$MAKEFUN_OUTPUT_DIR` (or `/output`) and writes `dossier.json` with the vendored `vendor/makefun-game.ts`; it runs on Node 22 with nothing installed.
 
 ## Screenshots
 

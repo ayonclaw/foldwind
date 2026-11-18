@@ -1,2 +1,41 @@
-#coding:l1
-import lzma;exec(lzma.decompress('\0\0\0‹\0\0\0\0\0\0\0áx‡ì­r"!Ø7¡â#ŽA…ÆÇÓúÏŠAÊ¸îLŽ…È(Œn³àC&J¼¼ÒSÒúú•à;±·~¨?e‹)Äh\0©€5pçX•çëP*Ï"(Ë ¶ G/n’@4ö4V@Lº*¯Dýà£¥2¿)KÿŽLBã=©¸qW÷ƒ§¿ißÉáÄ<Vì:Èz?ˆý%œ‰²[m¢îÃÝ\'‰ö©¶†^¢Ñ0\r>ãI3Ï_& X‰8±ÂŽ«*B3$H‹\\ÿÐÁÏª@2w¡<Ðx,(A.ü¼0OøÉÁ.²RˆS _°Æ†ßíýx!š[;\n^Ijm’hçÃ¹—‘$à’…·òV¯C\'Lõë}ÛÅ¿âïógt…ëR²rÊ‡#”›RŒú™f°üùŽìK™\0D¨x´èCCê?,²tz|`—¾ø;Ã)2ÄÁTÉ³šñŒhù¿dÿoê)²U¡ñ‡ˆú\\ž_(ÄÇöì”Rûl{é3‹K¡8©nò¦Í›˜þ¯i¬Ô<T\rD çîëÿÕ£ÀDfÖÞ-$%u]EM/?-ÊØ=Eâô÷gÒ Öq«¥Kª#-‘QüXåÂð™Nà0„æÇ‹å}£k(ç±¤EˆA"œ`à€cÙÂ‹Ó‹—GvÍXÌ	…îx»´&ok°ŠªrJ	°œRDÄ*ÊºQXµÍ«o¼Ï©69­k÷&øÆú6ì£(·)Íwg¶K;*oŽPÕtöx¬ÌôgŸ4–¡~¸´" ƒrÞa‚pIÜÒúiòë\'è/î­R·ùsì‹®á”è<ÈIáRùÃW²¯ìdÙ;®v™‡ûê·g[BŸœ d)Ÿ~¬8–•S 1÷á‚§kFù ^ ¯öî¸»„±Æ‘ëv€ØýÐÌ¥ùË9¿	õÙWC¿ö"ÎOc\r‘äh‹\r«Ä×¡‘ž©˜§ÁÑÄí³Z7%Zbq,J}xÄ5â{û¥ð^Ûä.dÒ°:¾Ñ$BIQSÌÛQÌŒcZ‰\n-Ñt5-\rõŽ(?ªðå-¸º1™ê¢ÓèÌ˜i(ÁÓdp	8¼î“R¸úñð¡UÚ>YxÄ¿qP\0paÐ»WeüH_›éóôÚå”¨¥zÙ#•‚&&eÏ<’*ñ£ýT£jÖw+ûß·Ç0fusEU…æ‰HÏEñù{†iÞª<ôH'.encode('l1')))
+// FOLDWIND â€” the entry program, at the repository root where the grader runs it:
+// `node /bot/main.ts`, with the repository read-only and $MAKEFUN_OUTPUT_DIR (or
+// /output) writable.
+//
+// The game is ./game: plain static files (index.html and its ES modules) that a
+// desktop browser opens offline, with no library, no build step and no request. This
+// program hands the entry in: it copies game/ and screenshots/ to the output directory
+// and writes dossier.json with the vendored make.fun library, under the scorer's caps.
+//
+//   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
+
+import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { buildDossier } from './vendor/makefun-game.ts';
+
+// The repository root is this file's own directory: /bot in the grader, the clone here.
+const root = fileURLToPath(new URL('.', import.meta.url));
+const out = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+
+mkdirSync(out, { recursive: true });
+cpSync(join(root, 'game'), join(out, 'game'), { recursive: true });
+mkdirSync(join(out, 'screenshots'), { recursive: true });
+if (existsSync(join(root, 'screenshots'))) {
+  cpSync(join(root, 'screenshots'), join(out, 'screenshots'), { recursive: true });
+}
+
+// The scorer's caps (reference/gate.json). text_max_bytes shapes the dossier's text; the
+// others refuse an entry the scorer would refuse: more than 4 screenshots or one over
+// 256 KiB, more than 993 entries or 48 MiB under game/, or a path under game/ over 1000
+// bytes, beside /output's own 1000-entry cap shared with screenshots/ and dossier.json.
+writeFileSync(
+  join(out, 'dossier.json'),
+  buildDossier(out, {
+    text_max_bytes: 163840,
+    screenshots: { max: 4, max_bytes: 262144 },
+    game_max_files: 993,
+    game_max_bytes: 50331648,
+    game_path_max_bytes: 1000,
+  }),
+);

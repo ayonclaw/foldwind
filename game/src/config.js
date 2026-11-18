@@ -40,7 +40,7 @@ export const PLAYER = {
   dartSpeed: 840,
   dartDamage: 1,
   /** Seconds of blinking mercy after a hit. */
-  mercy: 1.9,
+  mercy: 2.1,
   /** How far a hit pushes the ship and shakes the paper. */
   knockback: 26,
 };
@@ -75,7 +75,7 @@ export const BOSS = {
 
 /** Enemy archetypes: shape, speed, hit points, score and the rhythm of their fire. */
 export const ENEMIES = {
-  moth: { hp: 4, radius: 15, score: 100, speed: 108, fire: 1.25, sway: 1.9 },
+  moth: { hp: 4, radius: 15, score: 100, speed: 108, fire: 1.45, sway: 1.9 },
   lantern: { hp: 10, radius: 20, score: 220, speed: 70, fire: 1.5, sway: 0.9 },
   darter: { hp: 2, radius: 13, score: 90, speed: 265, fire: 0, sway: 0 },
   weaver: { hp: 13, radius: 22, score: 320, speed: 130, fire: 1.05, sway: 0.4 },
@@ -90,7 +90,7 @@ export const WAVES = [
   {
     name: 'MOTH DRIFT',
     note: 'they come with the warm wind',
-    groups: [['moth', 6, 0.34, 0.3], ['moth', 4, 0.42, 2.4]],
+    groups: [['moth', 5, 0.38, 0.3], ['moth', 3, 0.42, 2.4]],
   },
   {
     name: 'CROSSWIND',
